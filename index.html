@@ -1,0 +1,430 @@
+ <!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vandana — Sorry Page ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#06070a;
+      --card:#0e1116;
+      --accent:#ff5777;
+      --accent2:#7c5cff;
+      --muted:#9aa6b2;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:
+        radial-gradient(800px 400px at 10% 10%, rgba(255,87,119,0.04), transparent 6%),
+        radial-gradient(600px 300px at 90% 90%, rgba(124,92,255,0.03), transparent 8%),
+        var(--bg);
+      color:#e8f0ff;
+      -webkit-font-smoothing:antialiased;
+      padding:36px;
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:22px auto;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:28px;
+      align-items:stretch;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:18px;
+      padding:26px;
+      box-shadow: 0 14px 60px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .title{
+      font-size:30px;
+      margin:0 0 6px 0;
+      letter-spacing:-0.6px;
+      font-weight:800;
+      color:#fff;
+    }
+    .subtitle{ color:var(--muted); margin:0 0 18px 0; font-size:14px; }
+
+    .hero{
+      display:flex;
+      gap:18px;
+      align-items:center;
+    }
+    .avatar{
+      width:120px; height:120px; border-radius:16px; overflow:hidden;
+      border: 2px solid rgba(255,255,255,0.04);
+      flex-shrink:0;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .name{
+      font-size:20px; font-weight:700; color:#fff;
+    }
+    .meta{ color:var(--muted); font-size:13px; margin-top:6px; }
+
+    .message{
+      margin-top:18px;
+      background:var(--glass);
+      padding:18px; border-radius:12px; min-height:190px; position:relative;
+      font-size:17px; line-height:1.6;
+      white-space:pre-wrap;
+    }
+
+    .controls{ display:flex; gap:12px; margin-top:16px; align-items:center; }
+    .btn{
+      background:linear-gradient(90deg,var(--accent), var(--accent2));
+      border:none; color:white; padding:12px 16px; border-radius:12px;
+      cursor:pointer; font-weight:700; box-shadow: 0 8px 22px rgba(124,92,255,0.08);
+    }
+    .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); font-weight:600; }
+
+    /* right panel */
+    .right{
+      display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:flex-start;
+    }
+    .photo{
+      width:100%; border-radius:14px; overflow:hidden; height:380px; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .small{ font-size:13px; color:var(--muted); text-align:center; padding:8px 10px; border-radius:10px; background: rgba(255,255,255,0.01); width:100%; }
+
+    /* modal */
+    .modal-backdrop{ position:fixed; inset:0; background: rgba(2,6,23,0.72); display:flex; align-items:center; justify-content:center; z-index:9999; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+    .modal-backdrop.show{ opacity:1; pointer-events:auto; }
+    .modal{ width:min(720px,94%); background:var(--card); border-radius:14px; padding:22px; text-align:center; border:1px solid rgba(255,255,255,0.04); box-shadow: 0 30px 90px rgba(2,6,23,0.7); }
+
+    /* lock screen */
+    .lock-screen{
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:99999;
+      background: linear-gradient(0deg, rgba(2,6,23,0.95), rgba(2,6,23,0.95));
+      color:#fff; padding:18px;
+    }
+    .lock-panel{ width:420px; max-width:92%; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:22px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.03); }
+    .lock-panel input{ width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:#fff; margin-top:12px; outline:none; }
+    .lock-panel .hint{ color:var(--muted); margin-top:8px; font-size:13px; }
+
+    @media (max-width:960px){
+      .wrap{ grid-template-columns: 1fr; padding:12px; }
+      .right{ order:-1; }
+      .photo{ height:260px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOCK SCREEN (shows until correct password entered) -->
+  <div id="lockScreen" class="lock-screen" aria-hidden="false">
+    <div class="lock-panel" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+      <h2 id="lockTitle" style="margin:0 0 6px 0">This page is private for Vandana 💌</h2>
+      <div style="color:var(--muted)">Enter the password to open the surprise</div>
+      <input id="pwInput" type="password" placeholder="Enter password" aria-label="password" />
+      <div style="display:flex; gap:8px; margin-top:12px; justify-content:center">
+        <button id="pwSubmit" class="btn">Open</button>
+        <button id="pwHint" class="btn ghost">Hint</button>
+      </div>
+      <div class="hint" id="pwHintTxt" style="display:none">Password is a small token — change it in the code under <code>const LOCK_PASSWORD</code>.</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div class="avatar" aria-hidden="true">
+          <img id="avatarImg" src="motki.jpg" alt="Vandana" onerror="this.style.display='none'"/>
+        </div>
+        <div>
+          <div class="name" id="displayName">Vandana</div>
+          <div class="meta">Tumhari smile ke liye ye chhota surprise</div>
+        </div>
+      </div>
+
+      <div class="message" id="messageBox" aria-live="polite">
+        <!-- typing text will go here -->
+      </div>
+
+      <div class="controls">
+        <button id="forgiveBtn" class="btn">Forgive me ❤️</button>
+        <button id="replayBtn" class="btn ghost">Replay message</button>
+        <div style="flex:1"></div>
+        <div class="small">Tip: Edit <code>messageLines</code> or <code>LOCK_PASSWORD</code> in JS to personalize.</div>
+      </div>
+    </div>
+
+    <div class="card right">
+      <div class="photo" id="photoBox">
+        <img id="bigPhoto" src="motki.jpg" alt="Vandana photo" onerror="this.style.display='none'" />
+        <div id="photoPlaceholder" style="text-align:center; color:var(--muted); font-size:14px; display:none;">
+          Photo missing — put <code>motki.jpg</code> in the same folder.
+        </div>
+      </div>
+      <div class="small">Made with care. Right-click & shortcuts limited for surprise.</div>
+    </div>
+  </div>
+
+  <!-- Modal after forgiveness -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="document">
+      <h2>Yayy! 🎉</h2>
+      <p id="modalText" style="color:var(--muted); margin:0 0 14px 0">Tumne muskura diya — sab theek ho gaya.</p>
+      <button id="closeModal" class="btn">Close</button>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas" style="position:fixed; inset:0; pointer-events:none; z-index:9998;"></canvas>
+
+  <script>
+    /* ------------------ CUSTOMIZE HERE ------------------
+       Change these values if you want another name / password / message.
+    ---------------------------------------------------- */
+    const GIRL_NAME = "Vandana";
+    const LOCK_PASSWORD = "vandana123"; // default client-side password (change to your own)
+    const messageLines = [
+      "Hi Vandana,",
+      "Mujhe sach mein afsos hai — jo bhi hua uske liye maafi chahta hoon.",
+      "Tumhari ek muskaan se meri duniya jagmagati hai.",
+      "Please ek chhoti si smile wapas kar do — bas itna hi chaiye."
+    ];
+    /* -------------------------------------------------- */
+
+    // apply name
+    document.getElementById('displayName').textContent = GIRL_NAME;
+
+    // check photo presence / placeholder
+    const big = document.getElementById('bigPhoto');
+    big.onerror = () => {
+      document.getElementById('photoPlaceholder').style.display = 'block';
+      big.style.display = 'none';
+    };
+
+    // Typing effect
+    const typingEl = document.getElementById('messageBox');
+    let cursorOn = true;
+    function typeText(text, el, speed=28){
+      el.textContent = "";
+      return new Promise(resolve=>{
+        let i=0;
+        function step(){
+          if(i < text.length){
+            el.textContent += text[i++];
+            setTimeout(step, speed + (Math.random()*40 - 20));
+          } else resolve();
+        }
+        step();
+      });
+    }
+    setInterval(()=> {
+      typingEl.style.borderRight = cursorOn ? "2px solid rgba(255,255,255,0.12)" : "2px solid transparent";
+      cursorOn = !cursorOn;
+    }, 500);
+
+    async function playMessage(){
+      typingEl.textContent = "";
+      await typeText("…", typingEl, 10);
+      await new Promise(r => setTimeout(r, 350));
+      for(let i=0;i<messageLines.length;i++){
+        let line = messageLines[i].replace(/\{\{name\}\}/g, GIRL_NAME);
+        await typeText(line, typingEl, 26);
+        if(i < messageLines.length-1){
+          typingEl.textContent += "\n\n";
+          await new Promise(r => setTimeout(r, 650));
+        }
+      }
+    }
+
+    // small tone
+    function tinyTone(freq=440, dur=0.06){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type='sine'; o.frequency.value = freq;
+        g.gain.value = 0.0001;
+        o.connect(g); g.connect(ctx.destination);
+        const now = ctx.currentTime;
+        g.gain.exponentialRampToValueAtTime(0.08, now + 0.01);
+        o.start(now);
+        g.gain.exponentialRampToValueAtTime(0.00001, now + dur);
+        o.stop(now + dur + 0.02);
+      }catch(e){}
+    }
+
+    // forgive button
+    const forgiveBtn = document.getElementById('forgiveBtn');
+    const replayBtn = document.getElementById('replayBtn');
+    const modal = document.getElementById('modalBackdrop');
+    const closeModal = document.getElementById('closeModal');
+
+    forgiveBtn.addEventListener('click', ()=> {
+      runConfetti();
+      spawnHearts(10);
+      playMelody();
+      tinyTone(520,0.08);
+      showModal();
+    });
+    replayBtn.addEventListener('click', ()=> playMessage());
+    closeModal.addEventListener('click', ()=> { modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); });
+
+    function showModal(){
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden','false');
+    }
+
+    /* hearts */
+    function spawnHearts(n=6){
+      for(let i=0;i<n;i++){
+        const h = document.createElement('div');
+        h.className = 'heart';
+        const size = 20 + Math.random()*36;
+        h.style.width = size + "px"; h.style.height = size + "px";
+        h.style.left = (10 + Math.random()*80) + "%"; h.style.bottom = (-40 - Math.random()*40) + "px";
+        h.style.position = 'fixed'; h.style.zIndex = 9999; h.style.pointerEvents = 'none';
+        h.style.opacity = 0.95;
+        h.innerHTML = `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="rgba(255,87,119,0.85)" xmlns="http://www.w3.org/2000/svg"><path d="M12 21s-7-4.35-9.33-6.92C-1.53 9.8 4.4 3.5 8.26 6.1 10.1 7.53 12 9.8 12 9.8s1.9-2.27 3.74-3.7C19.6 3.5 25.53 9.8 21.33 14.08 19 16.65 12 21 12 21z"/></svg>`;
+        document.body.appendChild(h);
+        const dur = 3500 + Math.random()*2000;
+        h.style.transition = `transform ${dur/1000}s linear, opacity ${dur/1000}s linear`;
+        setTimeout(()=> h.style.transform = `translateY(-420px) scale(1.1)`, 20);
+        setTimeout(()=> h.remove(), dur+200);
+      }
+    }
+
+    /* Confetti */
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const cc = confettiCanvas.getContext('2d');
+    function resizeCanvas(){ confettiCanvas.width = window.innerWidth; confettiCanvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+    let confettiPieces = [];
+    function runConfetti(){
+      confettiPieces = [];
+      for(let i=0;i<120;i++){
+        confettiPieces.push({
+          x: Math.random()*confettiCanvas.width,
+          y: Math.random()*-confettiCanvas.height*0.5,
+          w: 6 + Math.random()*10,
+          h: 6 + Math.random()*10,
+          vx: -1 + Math.random()*2,
+          vy: 2 + Math.random()*4,
+          rot: Math.random()*360,
+          vr: (Math.random()-0.5)*8,
+          color: `hsl(${Math.floor(Math.random()*360)}, 80%, 60%)`,
+        });
+      }
+      let t0 = performance.now();
+      function frame(t){
+        const dt = t - t0; t0 = t;
+        cc.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+        for(let p of confettiPieces){
+          p.x += p.vx * (dt/16);
+          p.y += p.vy * (dt/16);
+          p.vy += 0.03 * (dt/16);
+          p.rot += p.vr * (dt/16);
+          cc.save();
+          cc.translate(p.x, p.y);
+          cc.rotate(p.rot * Math.PI/180);
+          cc.fillStyle = p.color;
+          cc.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          cc.restore();
+        }
+        confettiPieces = confettiPieces.filter(p => p.y < confettiCanvas.height + 100);
+        if(confettiPieces.length > 0) requestAnimationFrame(frame); else cc.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    /* Simple melody */
+    function playMelody(){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        const notes = [440, 523.25, 659.25, 880];
+        let t = 0;
+        for(let i=0;i<notes.length;i++){
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.type='sine'; o.frequency.value = notes[i];
+          g.gain.value = 0.0001;
+          o.connect(g); g.connect(ctx.destination);
+          o.start(now + t);
+          g.gain.exponentialRampToValueAtTime(0.08, now + t + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.00001, now + t + 0.22);
+          o.stop(now + t + 0.25);
+          t += 0.18;
+        }
+      }catch(e){}
+    }
+
+    // Start typing on load (but only after unlock)
+    async function startAll(){
+      await playMessage();
+      setTimeout(()=> spawnHearts(4), 1200);
+    }
+
+    // ------------------ LOCK logic (client-side) ------------------
+    const lockScreen = document.getElementById('lockScreen');
+    const pwInput = document.getElementById('pwInput');
+    const pwSubmit = document.getElementById('pwSubmit');
+    const pwHintBtn = document.getElementById('pwHint');
+    const pwHintTxt = document.getElementById('pwHintTxt');
+
+    function unlock(){
+      lockScreen.style.display = 'none';
+      lockScreen.setAttribute('aria-hidden','true');
+      startAll();
+    }
+
+    pwSubmit.addEventListener('click', ()=>{
+      const val = pwInput.value || "";
+      if(val.trim() === LOCK_PASSWORD){
+        unlock();
+      } else {
+        pwInput.value = "";
+        pwInput.placeholder = "Wrong password — try again";
+        tinyTone(220, 0.12);
+      }
+    });
+    pwInput.addEventListener('keydown', (e)=> { if(e.key === 'Enter') pwSubmit.click(); });
+
+    pwHintBtn.addEventListener('click', ()=> {
+      pwHintTxt.style.display = pwHintTxt.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Accessibility: allow ESC to close modal
+    document.addEventListener('keydown', (e)=> {
+      if(e.key === 'Escape') modal.classList.remove('show');
+    });
+
+    // Basic anti-tamper: disable right-click & common shortcuts (not foolproof)
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', function(e) {
+      // block F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S, Ctrl+Shift+C
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C')) || (e.ctrlKey && e.key === 'U') || (e.ctrlKey && e.key === 'S')) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Start: if photo missing, show placeholder text
+    window.addEventListener('load', ()=>{
+      // adapt name in message
+      for(let i=0;i<messageLines.length;i++){
+        messageLines[i] = messageLines[i].replace(/\{\{name\}\}/g, GIRL_NAME);
+      }
+      // If big photo not loaded, show placeholder (onerror already set)
+      // Note: lockScreen visible until correct password
+    });
+  </script>
+</body>
+</html>
